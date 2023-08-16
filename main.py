@@ -10,18 +10,18 @@ from clustering import get_hdbscan_clusters, save_clusters_to_file
 from utils import save_plot, move_files, normalize_audios
 from shutil import rmtree
 
-def execute_pileline(input_dir, output_dir, model_name):
+def execute_pileline(input_dir, output_dir, file_ext='wav'):
 
     temp_dir = 'temp'
     clusters_csv = join(temp_dir, 'clusters.csv')
     print("Normalizing audios...")
     norm_audios_dir = join(temp_dir, 'norm')
-    normalize_audios(input_dir, norm_audios_dir, force=True)
+    normalize_audios(input_dir, norm_audios_dir, file_ext=file_ext, force=True)
 
     print("Extracting embeddings...")
-    filelist = glob(join(norm_audios_dir, '*.wav'))
+    filelist = glob(join(norm_audios_dir, '*.{}'.format(file_ext)))
     emb_output_dir = join(temp_dir, 'embeddings')
-    extract_embeddings(filelist, emb_output_dir, model_name)
+    extract_embeddings(filelist, emb_output_dir)
 
     print("Loading embeddings...")
     filenames, embeddings = get_filenames_embeddings(emb_output_dir)
@@ -34,7 +34,7 @@ def execute_pileline(input_dir, output_dir, model_name):
     save_clusters_to_file(filenames, labels, clusters_csv)
 
     print("Moving files...")
-    move_files(clusters_csv, input_dir, output_dir)
+    move_files(clusters_csv, input_dir, output_dir, file_ext)
     
     print("Plotting...")
     output_img_filepath = join(temp_dir, "clusters.png")
@@ -47,8 +47,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input_dir', default='input', help='Input folder.')
     parser.add_argument('-o', '--output_dir', default='output', help='Output folder.')
-    parser.add_argument('-m', '--model', default='speakernet', help='Embedding model: speakernet or titanet.')
-    parser.add_argument('-f', '--force', action='store_true', default=False)    
+    parser.add_argument('-e', '--ext', default='wav', help='File extension: wav or flac.')
     args = parser.parse_args()
 
     for input_folder in listdir(args.input_dir):
@@ -58,7 +57,7 @@ def main():
 
         #makedirs(output_dir, exist_ok=True)
         
-        execute_pileline(input_dir, output_dir, args.model)
+        execute_pileline(input_dir, output_dir, args.ext)
 
 
 if __name__ == "__main__":

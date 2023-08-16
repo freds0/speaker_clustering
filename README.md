@@ -1,33 +1,21 @@
 # Speaker Clustering
 
-With the code of this repository it is possible to create clusters from a set of audio files. For this, speaker embeddings extracted using the Speakernet or Titanet models, present in NVIDIA's NeMO repository, are used. Just provide a folder containing the audio files that, executing this code, will result in the division of the audios into clusters according to the speaker embeddings.
+With the code of this repository it is possible to create clusters from a set of audio files. For this, speaker embeddings extracted using the [Ecapa-TDNN model](https://arxiv.org/abs/2005.07143), available at [huggingface](https://huggingface.co/yangwang825/ecapa-tdnn-vox2). Just provide a folder containing the audio files that, executing this code, will result in the division of the audios into clusters according to the speaker embeddings.
 
 ## Requirements
 
-To extract the embeddings using the SpeakerNet or TitaNet models, it is necessary to install the following requirements:
+To extract the embeddings using the SpeakerNet or TitaNet models, it is necessary to install the torch and torchaudio requirements:
 
 ```bash
-apt-get update && apt-get install -y libsndfile1 ffmpeg
-pip install Cython tqdm
-pip install nemo_toolkit['all']
+$ pip install torch torchvision torchaudio
 ```
-It is also necessary to install the Pytorch framework:
+
+It is also necessary to install the other requirements:
 
 ```bash
-$ pip install torch torchaudio
+$ pip install -r requirements.txt
 ```
 
-Alternatively, you can create a conda env using the available yml file:
-
-```bash
-$ conda env create -f environment.yml
-```
-
-Then just activate the virtual environment:
-
-```bash
-conda activate speaker_clustering
-```
 
 ## Dataset
 
@@ -35,18 +23,18 @@ The dataset must be in the following format:
 
 ```sh
 - input
-    - speaker_0
+    - folder_0
         - audio1.wav
         - audio2.wav
         - ...
         - audioN.wav
-    - speaker_1
+    - folder_1
         - audio1.wav
         - audio2.wav
         - ...
         - audioN.wav
         ...
-    - speaker_N
+    - folder__N
         - audio1.wav
         - audio2.wav
         - audioN.wav
@@ -76,7 +64,7 @@ The result will be as follows:
 ## Executing
 
 ```sh
-python main.py --input=input --output=output
+python main.py --input=input --output=output -e wav
 ```
 
 

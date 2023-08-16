@@ -13,9 +13,9 @@ import librosa
 import soundfile as sf
 
 
-def normalize_audios(input_path, output_path, force=False):
+def normalize_audios(input_path, output_path, file_ext='wav', force=False):
     makedirs(output_path, exist_ok=True)
-    for input_filepath in tqdm(glob(join(input_path, '*.wav'))):
+    for input_filepath in tqdm(glob(join(input_path, '*.{}'.format(file_ext)))):
         #folder = dirname(input_filepath).split(sep)[1:]
         #folder = join(*folder)
         filename = basename(input_filepath)
@@ -27,13 +27,16 @@ def normalize_audios(input_path, output_path, force=False):
         if force:
             waveform, sr = librosa.load(input_filepath, sr=None)
             norm_waveform = librosa.util.normalize(waveform)
-            sf.write(output_filepath, norm_waveform, sr, 'PCM_16')
+            if file_ext == 'wav':
+                sf.write(output_filepath, norm_waveform, sr, 'PCM_16')
+            elif file_ext == 'flac':
+                sf.write(output_filepath, norm_waveform, sr, 'PCM_24')  # Use 'PCM_24' for FLAC
 
         else:
             print("norm {} {}".format(input_filepath, output_filepath))
 
 
-def move_files(input_csv, input_dir, output_dir):
+def move_files(input_csv, input_dir, output_dir, file_ext='wav'):
     # Criar a pasta de destino se não existir
     #if not exists(output_dir):
     #    makedirs(output_dir)
@@ -46,7 +49,7 @@ def move_files(input_csv, input_dir, output_dir):
         # Percorrer as linhas do arquivo CSV
         for row in reader:
             filename = row[0]
-            filename = filename + '.wav'
+            filename = f"{filename}.{file_ext}"
             folder = row[1]
             filepath = join(input_dir, filename)
 
