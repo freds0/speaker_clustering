@@ -95,7 +95,7 @@ def main():
     filelist = glob(args.input_dir + '/*.wav')
 
     makedirs(args.output_dir, exist_ok=True)
-    extract_embeddings(filelist, args.output_dir, args.model_name)
+    extract_embeddings(filelist, args.output_dir)
 
 
 if __name__ == "__main__":
